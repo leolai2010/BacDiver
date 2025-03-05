@@ -9,10 +9,10 @@ def hello():
         return "Hello from Cloud Run!"
     elif request.method == 'POST':
         data = request.get_json()
-        if data and 'column4' in data and 'column5' in data:
-            column4_value = data['column4']
-            column5_value = data['column5']
-            return f"Values from Cloud Function: Column 4 = {column4_value}, Column 5 = {column5_value}"
+        if data and 'genus' in data and 'specie' in data:
+            genus_value = data['genus']
+            specie_value = data['specie']
+            return f"Values from Cloud Function: Genus = {genus_value}, Specie = {specie_value}"
         else:
             return "Invalid JSON payload", 400
 
