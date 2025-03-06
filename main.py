@@ -1,18 +1,29 @@
 from flask import Flask, request
 import os
+import bacdive
+import json
 
 app = Flask(__name__)
 
-@app.route("/", methods=['GET', 'POST'])
-def hello():
-    if request.method == 'GET':
-        return "Hello from Cloud Run!"
-    elif request.method == 'POST':
+def bacdiveid_finder(bacid):
+    client = bacdive.BacdiveClient('leolai2010@gmail.com','Kill!77358524')
+    client.search(taxonomy=bacid)
+    for strain in client.retrieve(['type strain']):
+        bacdiveid = next(iter(strain))
+        type_strain = strain[bacdiveid][0].get('type strain', None)
+        if type_strain == 'yes':
+            return bacdiveid
+        
+@app.route("/", methods=['POST'])
+def diver():
+    if request.method == 'POST':
         data = request.get_json()
         if data and 'genus' in data and 'specie' in data:
-            genus_value = data['genus']
-            specie_value = data['specie']
-            return f"Values from Cloud Function: Genus = {genus_value}, Specie = {specie_value}"
+            genus = data['genus']
+            specie = data['specie']
+            organism = genus + ' ' + specie
+            bacdiveid = bacdiveid_finder(organism)
+            return f"Values from Cloud Function: {bacdiveid}"
         else:
             return "Invalid JSON payload", 400
 
