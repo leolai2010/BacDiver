@@ -27,6 +27,8 @@ interpert_dict = {
 
 def merge_objects(objects):
     merged = {}
+    if isinstance(objects, dict):  
+        objects = [objects]
     keys = {key for obj in objects for key in obj}  
     for key in keys:
         values = [obj[key] for obj in objects if key in obj]  
@@ -45,13 +47,17 @@ def bacdiveid_finder(bacid):
 def bacdiveid_result(bacdiveid):
     data = {}
     client.search(id = bacdiveid)
-    for strain in client.retrieve(['methylred-test', 'API 20E']):
-        if strain[bacdiveid][0].get('methylred-test', None) == '+':
-            data['methylred_result'] = 1
-        else:
-            data['methylred_result'] = 0
-        combine_api_20e_result = merge_objects(strain[bacdiveid][1].get('API 20E', None))
+    for strain in client.retrieve('API 20E'):
+        combine_api_20e_result = merge_objects(strain[bacdiveid][0].get('API 20E', None))
         break
+    for strain in client.retrieve('methylred-test'):
+        if not strain[bacdiveid]:
+            data['methylred_result'] = 0
+        else:
+            if strain[bacdiveid][0].get('methylred-test', None) == '+':
+                data['methylred_result'] = 1
+            else:
+                data['methylred_result'] = 0
     for interpert in interpert_dict:
         if interpert in combine_api_20e_result:
             data[interpert_dict[interpert]] = 1 if combine_api_20e_result[interpert] == "+" else 0
