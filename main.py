@@ -55,7 +55,7 @@ def bacdiveid_result(bacdiveid):
     for interpert in interpert_dict:
         if interpert in combine_api_20e_result:
             data[interpert_dict[interpert]] = 1 if combine_api_20e_result[interpert] == "+" else 0
-    print(data)
+    return data
 
 @app.route("/", methods=['POST'])
 def diver():
